@@ -1,0 +1,37 @@
+name: Daily green
+
+on:
+  schedule:
+    - cron: "12 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme-date:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update daily marker
+        run: |
+          today="$(date -u +'%Y-%m-%d')"
+          perl -0pi -e "s/<!-- daily-green:start -->.*?<!-- daily-green:end -->/<!-- daily-green:start -->\nLast daily update: ${today}\n<!-- daily-green:end -->/s" README.md
+
+      - name: Commit daily README update
+        run: |
+          if git diff --quiet; then
+            echo "README is already up to date."
+            exit 0
+          fi
+
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update daily README date"
+          git push
