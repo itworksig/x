@@ -1,4 +1,3 @@
-```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -286,4 +285,3 @@ echo "======================================"
 echo ""
 echo "Restart Codex after switching modes."
 echo ""
-```
